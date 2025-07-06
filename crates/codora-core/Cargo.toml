@@ -1,5 +1,5 @@
 [package]
-name = "extension"
+name = "codora-core"
 version = "0.1.0"
 description = "Helpful abstraction and utilities built to speed up development in rust"
 edition = "2024"
