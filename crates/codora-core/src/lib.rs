@@ -1,3 +1,25 @@
+//! # Codora Core
+//!
+//! **Codora Core** is a foundational abstraction layer for Rust, designed to accelerate development by providing a suite of ergonomic utilities, macros, and helpers.
+//!
+//! This crate is optional and can be included in your project by enabling the appropriate feature flags when adding `codora` as a dependency.
+//!
+//! ## Features
+//! - Simplifies common Rust patterns and boilerplate
+//! - Provides utility macros for error handling, string manipulation, concurrency, and more
+//! - Aims to improve productivity and code clarity for Rust developers
+//!
+//! ## Usage
+//! To use Codora Core, add it to your `Cargo.toml` with the desired features enabled:
+//!
+//! ```toml
+//! codora = { version = "x.y.z", features = ["core"] }
+//! ```
+//!
+//! Then import and use the provided abstractions in your code as needed.
+//!
+//! ## Note
+//! Codora Core is designed to be non-intrusive and fully compatible with standard Rust development practices. All abstractions are optional and can be adopted incrementally.
 #![forbid(unsafe_code)]
 // Silence the noise in development!
 #![cfg_attr(debug_assertions, allow(dead_code, unused_variables))]
@@ -6,8 +28,7 @@
 #![cfg_attr(test, allow(clippy::float_cmp))]
 #![cfg_attr(not(test), deny(clippy::print_stdout, clippy::dbg_macro))]
 // - Lint for missing docs
-// #![cfg_attr(not(debug_assertions), deny(missing_docs))]
-//!
+#![cfg_attr(not(debug_assertions), deny(missing_docs))]
 
 #[doc(inline)]
 /// Re-exports the [`new`](https://docs.rs/derive-new/latest/derive_new/derive/fn.new.html) macro from the `derive-new` crate.
@@ -90,9 +111,12 @@ where
     T: std::str::FromStr,
 {
     get_env(name).and_then(|value| {
-        value
-            .parse::<T>()
-            .map_err(|_| format!("Failed to parse '{name}' into {}", std::any::type_name::<T>()))
+        value.parse::<T>().map_err(|_| {
+            format!(
+                "Failed to parse '{name}' into {}",
+                std::any::type_name::<T>()
+            )
+        })
     })
 }
 
@@ -325,16 +349,12 @@ macro_rules! string {
 
     // Repeat a character `count` times
     (repeat: $ch:expr, $count:expr) => {
-        std::iter::repeat($ch)
-            .take($count)
-            .collect::<String>()
+        std::iter::repeat($ch).take($count).collect::<String>()
     };
 
     // Create String from iterator of chars
     (iter: $iterable:expr) => {
-        $iterable
-            .into_iter()
-            .collect::<String>()
+        $iterable.into_iter().collect::<String>()
     };
 
     // Create String with specific capacity
